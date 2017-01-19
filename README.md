@@ -13,7 +13,7 @@ in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:napper, "git: "https://github.com/chloeandisabel/napper.git"}]
+  [{:napper, git: "https://github.com/chloeandisabel/napper.git"}]
 end
 ```
 
