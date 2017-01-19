@@ -8,12 +8,12 @@ defines the functions `list/2`, `get/3`, `create/3`, `update/3`, and
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be
-installed by adding Napper to your list of dependencies in `mix.exs`:
+The package can be installed by adding Napper to your list of dependencies
+in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:napper, "~> 0.0.1"}]
+  [{:napper, "git: "https://github.com/chloeandisabel/napper.git"}]
 end
 ```
 
