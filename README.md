@@ -94,7 +94,7 @@ end
 
 `use Napper.Resource` defines the `list/2`, `get/3`, `create/3`, and
 `update/3`, functions for this module. Optional `:only` and `:except`
-options liet you specify which funtions you want.
+options let you specify which funtions you want.
 
 By deriving from `Poison.Encoder`, `Napper` can turn your struct into JSON
 to send to the API.
