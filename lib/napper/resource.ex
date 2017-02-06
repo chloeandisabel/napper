@@ -72,7 +72,7 @@ defmodule Napper.Resource do
 
   defp should_define?(onlies, exceptions, atom) do
     cond do
-      exceptions && exceptions |> Enum.member?(atom) -> true
+      exceptions && exceptions |> Enum.member?(atom) -> false
       onlies && !(onlies |> Enum.member?(atom)) -> false
       true -> true
     end

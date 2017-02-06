@@ -3,7 +3,7 @@
 # it's too late.
 
 defmodule TestResource.App do
-  use Napper.Resource
+  use Napper.Resource, only: [:get, :list]
 
   defstruct [:id, :name, :created_at]
   @type t :: %__MODULE__{id: String.t, name: String.t, created_at: tuple}
@@ -13,7 +13,7 @@ defmodule TestResource.App do
 end
 
 defmodule TestResource.Dyno do
-  use Napper.Resource
+  use Napper.Resource, except: [:create]
 
   defstruct [:id, :name, :app, :created_at]
   @type t :: %__MODULE__{id: String.t, name: String.t, app: App.t, created_at: tuple}
