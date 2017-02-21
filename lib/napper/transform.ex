@@ -62,9 +62,7 @@ defmodule Napper.Transform do
 
   defp datetime_strings_to_timestamps(data) do
     data |> transform(fn
-      (_key, nil) ->
-        nil
-      (_key, val) ->
+      (_key, val) when is_binary(val) ->
         matches = Regex.run(@datetime_regex, val)
         if matches do
           [_ | ts_strs] = matches
@@ -73,6 +71,8 @@ defmodule Napper.Transform do
         else
           val
         end
+      (_key, val) ->
+        val
     end)
   end
 
