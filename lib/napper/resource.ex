@@ -61,6 +61,7 @@ defmodule Napper.Resource do
   def def_update do
     quote do
       def update(client, data), do: Napper.update(client, __MODULE__, data)
+      def update(client, id, data), do: Napper.update(client, __MODULE__, id, data)
     end
   end
 
