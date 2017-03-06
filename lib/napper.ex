@@ -146,7 +146,7 @@ defmodule Napper do
   def create(client, module, data) do
     client
     |> client.api.post(url_for(client, module), Transform.encode!(data))
-    |> Transform.decode!([struct(module)], client.remove_wrapper)
+    |> Transform.decode!(struct(module), client.remove_wrapper)
   end
 
   @doc """
@@ -156,7 +156,7 @@ defmodule Napper do
   def update(client, module, data) do
     client
     |> client.api.patch(url_for(client, module), Transform.encode!(data))
-    |> Transform.decode!([struct(module)], client.remove_wrapper)
+    |> Transform.decode!(struct(module), client.remove_wrapper)
   end
 
   @doc """
@@ -166,7 +166,7 @@ defmodule Napper do
   def update(client, module, id, data) do
     client
     |> client.api.patch(url_for(client, module, id), Transform.encode!(data))
-    |> Transform.decode!([struct(module)], client.remove_wrapper)
+    |> Transform.decode!(struct(module), client.remove_wrapper)
   end
 
   @doc """
@@ -176,7 +176,7 @@ defmodule Napper do
   def delete(client, module, id) do
     client
     |> client.api.delete(url_for(client, module, id))
-    |> Transform.decode!([struct(module)], client.remove_wrapper)
+    |> Transform.decode!(struct(module), client.remove_wrapper)
   end
 
   # ================ Private helpers ================
