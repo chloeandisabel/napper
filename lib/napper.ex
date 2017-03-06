@@ -160,6 +160,16 @@ defmodule Napper do
   end
 
   @doc """
+  Updates a resource, given an id.
+  """
+  @spec update(t, module, String.t, map) :: map
+  def update(client, module, id, data) do
+    client
+    |> client.api.patch(url_for(client, module, id), Transform.encode!(data))
+    |> Transform.decode!([struct(module)], client.remove_wrapper)
+  end
+
+  @doc """
   Deletes a resource.
   """
   @spec delete(t, module, String.t) :: map
