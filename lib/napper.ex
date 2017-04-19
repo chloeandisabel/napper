@@ -196,7 +196,7 @@ defmodule Napper do
     s = struct(module)
     url = Endpoint.endpoint_url(s)
     if Endpoint.under_master_resource?(s) do
-      "/apps/#{client.app}#{url}"
+      "#{client.master_prefix}/#{client.master_id}#{url}"
     else
       url
     end
