@@ -19,6 +19,8 @@ end
 
 ## Configuration
 
+See "Options" below for an explanation of each of the config values.
+
 ```elixir
 config :napper,
   url: "https://api.example.com",
@@ -26,7 +28,7 @@ config :napper,
   accept: "application/json",
   master_prefix: "/master",
   master_id: "our-master-id",
-  remove_wrapper: true,
+  remove_wrapper: false,
   api: Napper.API
 ```
 
@@ -35,10 +37,20 @@ An example for Heroku:
 ```elixir
 config :napper,
   url: "https://api.heroku.com",
-  auth: "Bearer some-long-token-value",
-  accept: "application/json",
+  auth: "Bearer #{System.get_env("HEROKU_API_KEY")}",
+  accept: "application/vnd.heroku+json; version=3",
   master_prefix: "/apps",
-  master_id: "prod-app-name"
+  master_id: "some-app-name"
+```
+
+An example for HireFire:
+
+```elixir
+config :napper,
+  url: "https://api.hirefire.io",
+  auth: "Token #{System.get_env("HIREFIRE_API_KEY")}",
+  accept: "application/vnd.hirefire.v1+json",
+  remove_wrapper: true
 ```
 
 ## Options
@@ -133,6 +145,10 @@ master resource by specifying another id and/or prefix.
 
 ## Using the Client
 
+These examples are written as if the modules in the `examples/heroku`
+directory were in `lib/heroku`. They won't work if you just fire up `iex -S
+mix` because Napper isn't tied to any one API.
+
 What applications do we have?
 
 ```elixir
@@ -140,7 +156,8 @@ iex> client |> Napper.Heroku.App.list
 #=> [%Napper.Heroku.App{...}]
 ```
 
-What dynos does the "prod-app-name" application have?
+What dynos does the "some-app-name" application have? (The app name is
+assumed to be defined in the config file or shoved into the client.)
 
 ```elixir
 iex> ds = client |> Napper.Heroku.Dyno.list

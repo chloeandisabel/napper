@@ -130,12 +130,27 @@ defmodule Napper do
   end
 
   @doc """
-  Gets a single resource, given an id string.
+  Gets a list of resources, given a map of GET params.
   """
-  @spec get(t, module, String.t) :: map
-  def get(client, module, id) do
+  @spec list(t, module, map) :: [map]
+  def list(client, module, params) do
+    client
+    |> client.api.get(url_for(client, module, params))
+    |> Transform.decode!([struct(module)], client.remove_wrapper)
+  end
+
+  @doc """
+  Gets a single resource, given an id string or a map of GET params.
+  """
+  @spec get(t, module, String.t | map) :: map
+  def get(client, module, id) when is_binary(id) do
     client
     |> client.api.get(url_for(client, module, id))
+    |> Transform.decode!(struct(module), client.remove_wrapper)
+  end
+  def get(client, module, params) when is_map(params) do
+    client
+    |> client.api.get(url_for(client, module, params))
     |> Transform.decode!(struct(module), client.remove_wrapper)
   end
 
@@ -186,9 +201,12 @@ defmodule Napper do
     Keyword.get(options, key) || Application.get_env(:napper, key)
   end
 
-  @spec url_for(t, module, String.t) :: String.t
-  defp url_for(client, module, id) do
+  @spec url_for(t, module, String.t | map) :: String.t
+  defp url_for(client, module, id) when is_binary(id) do
     url_for(client, module) <> "/#{id}"
+  end
+  defp url_for(client, module, params) when is_map(params) do
+    url_for(client, module) <> "?#{URI.encode_query(params)}"
   end
 
   @spec url_for(t, module) :: String.t

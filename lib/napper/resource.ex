@@ -43,12 +43,13 @@ defmodule Napper.Resource do
   def def_list do
     quote do
       def list(client), do: Napper.list(client, __MODULE__)
+      def list(client, params), do: Napper.list(client, __MODULE__, params)
     end
   end
 
   def def_get do
     quote do
-      def get(client, id), do: Napper.get(client, __MODULE__, id)
+      def get(client, id_or_params), do: Napper.get(client, __MODULE__, id_or_params)
     end
   end
 
