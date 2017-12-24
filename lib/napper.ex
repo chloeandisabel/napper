@@ -13,22 +13,22 @@ defmodule Napper do
   alias Napper.{Endpoint, Transform}
 
   defstruct base_url: nil,
-    accept: @default_accept_header,
-    auth: nil,
-    api: Napper.API,
-    master_id: nil,
-    master_prefix: nil,
-    remove_wrapper: false
+            accept: @default_accept_header,
+            auth: nil,
+            api: Napper.API,
+            master_id: nil,
+            master_prefix: nil,
+            remove_wrapper: false
 
   @type t :: %Napper{
-    base_url: String.t,
-    accept: String.t,
-    auth: String.t,
-    api: module,
-    master_id: String.t,
-    master_prefix: String.t,
-    remove_wrapper: boolean
-  }
+          base_url: String.t(),
+          accept: String.t(),
+          auth: String.t(),
+          api: module,
+          master_id: String.t(),
+          master_prefix: String.t(),
+          remove_wrapper: boolean
+        }
 
   # ================ Client creation ================
 
@@ -102,10 +102,11 @@ defmodule Napper do
              base_url: "https://api.example.com", master_id: "some-uuid",
              master_prefix: "/apps"}
   """
-  @spec api_client(Keyword.t) :: t
+  @spec api_client(Keyword.t()) :: t
   def api_client(options \\ []) do
     base_url = config(:url, options)
-    if base_url == nil, do: raise "missing :url"
+    if base_url == nil, do: raise("missing :url")
+
     %Napper{
       base_url: base_url,
       accept: config(:accept, options) || @default_accept_header,
@@ -142,12 +143,13 @@ defmodule Napper do
   @doc """
   Gets a single resource, given an id string or a map of GET params.
   """
-  @spec get(t, module, String.t | map) :: map
+  @spec get(t, module, String.t() | map) :: map
   def get(client, module, id) when is_binary(id) do
     client
     |> client.api.get(url_for(client, module, id))
     |> Transform.decode!(struct(module), client.remove_wrapper)
   end
+
   def get(client, module, params) when is_map(params) do
     client
     |> client.api.get(url_for(client, module, params))
@@ -177,7 +179,7 @@ defmodule Napper do
   @doc """
   Updates a resource, given an id.
   """
-  @spec update(t, module, String.t, map) :: map
+  @spec update(t, module, String.t(), map) :: map
   def update(client, module, id, data) do
     client
     |> client.api.patch(url_for(client, module, id), Transform.encode!(data))
@@ -187,7 +189,7 @@ defmodule Napper do
   @doc """
   Deletes a resource.
   """
-  @spec delete(t, module, String.t) :: map
+  @spec delete(t, module, String.t()) :: map
   def delete(client, module, id) do
     client
     |> client.api.delete(url_for(client, module, id))
@@ -196,23 +198,25 @@ defmodule Napper do
 
   # ================ Private helpers ================
 
-  @spec config(atom, map) :: String.t | nil
+  @spec config(atom, map) :: String.t() | nil
   defp config(key, options) do
     Keyword.get(options, key) || Application.get_env(:napper, key)
   end
 
-  @spec url_for(t, module, String.t | map) :: String.t
+  @spec url_for(t, module, String.t() | map) :: String.t()
   defp url_for(client, module, id) when is_binary(id) do
     url_for(client, module) <> "/#{id}"
   end
+
   defp url_for(client, module, params) when is_map(params) do
     url_for(client, module) <> "?#{URI.encode_query(params)}"
   end
 
-  @spec url_for(t, module) :: String.t
+  @spec url_for(t, module) :: String.t()
   defp url_for(client, module) do
     s = struct(module)
     url = Endpoint.endpoint_url(s)
+
     if Endpoint.under_master_resource?(s) do
       "#{client.master_prefix}/#{client.master_id}#{url}"
     else

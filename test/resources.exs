@@ -6,7 +6,7 @@ defmodule TestResource.App do
   use Napper.Resource, only: [:get, :list]
 
   defstruct [:id, :name, :created_at]
-  @type t :: %__MODULE__{id: String.t, name: String.t, created_at: tuple}
+  @type t :: %__MODULE__{id: String.t(), name: String.t(), created_at: tuple}
 
   def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/apps"
@@ -16,7 +16,7 @@ defmodule TestResource.Dyno do
   use Napper.Resource, except: [:create]
 
   defstruct [:id, :name, :app, :created_at]
-  @type t :: %__MODULE__{id: String.t, name: String.t, app: App.t, created_at: tuple}
+  @type t :: %__MODULE__{id: String.t(), name: String.t(), app: App.t(), created_at: tuple}
 
   def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/dynos"

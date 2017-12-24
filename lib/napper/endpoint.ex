@@ -4,7 +4,7 @@ defprotocol Napper.Endpoint do
   resource.
   """
 
-  @type t :: Napper.Endpoint.t
+  @type t :: Napper.Endpoint.t()
 
   @doc """
   Returns `true` if the endpoint's URL is under
@@ -24,6 +24,6 @@ defprotocol Napper.Endpoint do
   "/<master-prefix>/<master-id><endpoint-url>", where master-id is the
   `master` value stored in the `Napper` client struct.
   """
-  @spec endpoint_url(t) :: String.t
+  @spec endpoint_url(t) :: String.t()
   def endpoint_url(struct)
 end

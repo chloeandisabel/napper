@@ -1,5 +1,4 @@
 defmodule Napper.MockAPI do
-
   alias Napper.{Transform, Error}
   alias TestResource.{App, Dyno}
 
@@ -17,18 +16,26 @@ defmodule Napper.MockAPI do
   }
 
   def get(_client, "/apps") do
-    Transform.encode! [@myapp]
+    Transform.encode!([@myapp])
   end
+
   def get(client, "/apps/no-such-app") do
-    %Error{code: 404, message: "Resource not found", url: "#{client.base_url}#{App.endpoint_url}"}
+    %Error{
+      code: 404,
+      message: "Resource not found",
+      url: "#{client.base_url}#{App.endpoint_url()}"
+    }
   end
+
   def get(_client, "/apps/myapp/dynos") do
-    Transform.encode! [@mydyno]
+    Transform.encode!([@mydyno])
   end
+
   def get(_client, "/apps/myapp/dynos/" <> dyno_name) do
-    Transform.encode! %Dyno{@mydyno | name: dyno_name}
+    Transform.encode!(%Dyno{@mydyno | name: dyno_name})
   end
+
   def get(_client, "/apps/" <> app_name) do
-    Transform.encode! %App{@myapp | name: app_name}
+    Transform.encode!(%App{@myapp | name: app_name})
   end
 end

@@ -36,8 +36,8 @@ defmodule Napper.Resource do
     exceptions = Keyword.get(opts, :except)
 
     @resource_funcs
-    |> Enum.filter(fn({a, _}) -> should_define?(onlies, exceptions, a) end)
-    |> Enum.map(fn({_, f}) -> f.() end)
+    |> Enum.filter(fn {a, _} -> should_define?(onlies, exceptions, a) end)
+    |> Enum.map(fn {_, f} -> f.() end)
   end
 
   def def_list do

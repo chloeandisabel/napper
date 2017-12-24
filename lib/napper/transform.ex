@@ -32,10 +32,11 @@ defmodule Napper.Transform do
       ...> |> Napper.Transform.decode!(%{}, false)
       %{"a" => 1, "created_at" => nil}
   """
-  @spec decode!(String.t | Error.t, module | Enum.t, boolean) :: map
+  @spec decode!(String.t() | Error.t(), module | Enum.t(), boolean) :: map
   def decode!(%Error{} = err, _) do
     err
   end
+
   def decode!(body, decode_type, wrapped) do
     body
     |> remove_outer_wrapper(wrapped)
@@ -48,22 +49,25 @@ defmodule Napper.Transform do
 
   Converts Erlang `date()` tuples into strings.
   """
-  @spec encode!(map) :: String.t
+  @spec encode!(map) :: String.t()
   def encode!(data) do
-    data |> timestamps_to_datetime_strings |> Poison.encode!
+    data |> timestamps_to_datetime_strings |> Poison.encode!()
   end
 
   # ================ Private helpers ================
 
   defp remove_outer_wrapper(s, false), do: s
+
   defp remove_outer_wrapper(s, true) do
     s |> String.replace(~r{^{"\w+":\s*}, "") |> String.replace(~r/\s*}$/, "")
   end
 
   defp datetime_strings_to_timestamps(data) do
-    data |> transform(fn
-      (_key, val) when is_binary(val) ->
+    data
+    |> transform(fn
+      _key, val when is_binary(val) ->
         matches = Regex.run(@datetime_regex, val)
+
         if matches do
           [_ | ts_strs] = matches
           [y, m, d, h, n, s] = ts_strs |> Enum.map(&String.to_integer/1)
@@ -71,17 +75,20 @@ defmodule Napper.Transform do
         else
           val
         end
-      (_key, val) ->
+
+      _key, val ->
         val
     end)
   end
 
   defp timestamps_to_datetime_strings(data) do
-    data |> transform(fn
-      (_, {{y, m, d}, {h, n, s}}) ->
+    data
+    |> transform(fn
+      _, {{y, m, d}, {h, n, s}} ->
         :io_lib.format(@datetime_format, [y, m, d, h, n, s])
-        |> IO.iodata_to_binary
-      (_, val) ->
+        |> IO.iodata_to_binary()
+
+      _, val ->
         val
     end)
   end
@@ -90,18 +97,22 @@ defmodule Napper.Transform do
   # (keys that end with "_at" or "_time"). `f` must take two arguments: key
   # and value. Works recursively.
   defp transform(data, f) when is_list(data) do
-    data |> Enum.map(&(transform(&1, f)))
+    data |> Enum.map(&transform(&1, f))
   end
+
   defp transform(data, f) do
     data
-    |> Map.keys
-    |> Enum.reduce(data, fn(k, m) ->
+    |> Map.keys()
+    |> Enum.reduce(data, fn k, m ->
       v = Map.get(m, k)
+
       cond do
         datetime_key?(k) ->
-          Map.update!(m, k, &(f.(k, &1)))
+          Map.update!(m, k, &f.(k, &1))
+
         is_map(v) ->
-          Map.update!(m, k, &(transform(&1, f)))
+          Map.update!(m, k, &transform(&1, f))
+
         true ->
           m
       end
